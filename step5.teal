@@ -1,0 +1,44 @@
+#pragma version 2
+txn Fee
+int 1000
+<=
+global GroupSize
+int 2
+==
+txn GroupIndex
+int 1
+==
+&&
+&&
+gtxn 0 TypeEnum
+int pay
+==
+gtxn 0 Amount
+int 42000000
+==
+&&
+gtxn 0 Receiver
+addr 4O6BRAPVLX5ID23AZWV33TICD35TI6JWOHXVLPGO4VRJATO6MZZQRKC7RI
+==
+&&
+&&
+txn TypeEnum
+int axfer
+==
+txn AssetAmount
+int 1
+==
+&&
+txn XferAsset
+int 14035004
+==
+&&
+txn AssetCloseTo
+global ZeroAddress
+==
+&&
+txn RekeyTo
+global ZeroAddress
+==
+&&
+&&
