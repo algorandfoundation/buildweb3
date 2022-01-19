@@ -114,7 +114,7 @@ After installing the AlgoDEA extension in PyCharm:
 1. Open PyCharm
 2. Create a new Algorand project (instead of "Pure Python" project which is the default)
 3. Set up the node by clicking on the "Algorand Explorer" on the top right and then fill in the information as shown below:
-    ![Screenshot of AlgoDEA PureStake node configuration](img/AlgoDEAPureStakeNodeConfiguration.png)
+    ![Screenshot of AlgoDEA PureStake node configuration](img/step0AlgoDEAPureStakeNodeConfiguration.png)
 4. Click on the button "Fetch Network Info". "Genesis Hash" and "Genesis ID" should be automatically populated
 
 Troubleshooting: If you don't see the "Algorand Explorer" tab, check you created a new Algorand project and not a Pure Python project.
