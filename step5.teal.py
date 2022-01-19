@@ -5,7 +5,7 @@ from pyteal import *
 # Address of the seller of the asset
 seller = Addr("4O6BRAPVLX5ID23AZWV33TICD35TI6JWOHXVLPGO4VRJATO6MZZQRKC7RI")
 asset_id = 14035004  # ID of the official buildweb3 asset
-asset_price = 42000000  # price of 1 asset = 42 Algos
+asset_price = 4200000  # price of 1 asset = 4.2 Algos
 
 
 def smart_contract(tmpl_seller=seller,

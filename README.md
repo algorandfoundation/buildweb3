@@ -10,7 +10,7 @@ In this homework, you will learn:
 1. how to create your first Algorand accounts.
 2. how to create and distribute your first asset or token on the Algorand blockchain.
 3. how to trade your token "atomically" without any third party.
-4. how to get the official "buildweb3" asset for just 42 Algos, by using your first stateless smart contract.
+4. how to get the official "buildweb3" asset for just 4.2 Algos, by using your first smart signature (aka stateless smart contract).
 
 The first two goals require *no programming knowledge* and can be done 100% online without installing anything on your computer!
 If you are interested, just skip Step 0 and do Steps 1, 2, and 3.
@@ -19,7 +19,7 @@ Sections "Background" and "Going Further" are not mandatory to complete the home
 
 *Warning*: All the homework is meant to be done on TestNet, where coins (called the Algos) are fake. When switching to MainNet, accounts store real cryptocurrency and proper security of key storage and management needs to be taken into consideration.
 
-*Note*: The answers in [form.example.md](form.example.md) would be valid answers of the homework and you can search for the various accounts and transaction IDs on the block explorer of your choice: [AlgoExplorer](https://testnet.algoexplorer.io) or [GoalSeeker](https://goalseeker.purestake.io/algorand/testnet).
+*Note*: The answers in [form.example.md](form.example.md) would be valid answers of (a slightly earlier version of) the homework and you can search for the various accounts and transaction IDs on the block explorer of your choice: [AlgoExplorer](https://testnet.algoexplorer.io) or [GoalSeeker](https://goalseeker.purestake.io/algorand/testnet). Note that this homework was recently changed and the answers in [form.example.md](form.example.md) use slightly higher amounts for each transaction.
 
 ## Step 0 - Setup
 
@@ -36,15 +36,35 @@ To access a blockchain, you also need access to an Algorand node and optionally 
 This homework will use the Algorand TestNet network.
 TestNet has the same protocol as the main Algorand network MainNet, but uses fake Algos. (The Algo is the native cryptocurrency of the Algorand blockchain.)
 
-In what follows, we give examples with the Python SDK and the [AlgoExplorer API Service](https://testnet.algoexplorer.io/api-dev/v2).
-However, you may use the SDK of your choice or the command line tools, and you may also setup a personal node and use it.
-In that case, you may skip the instructions on how to install Python and the Python SDK, and instead read [how to setup your workspace in the developer documentation](https://developer.algorand.org/docs/build-apps/setup).
+In what follows, we give examples with the Python SDK and the [free PureStake API Service](https://www.purestake.com/technology/algorand-api/).
+However, you may use the SDK of your choice or the command line tools.
+You may also use another API service or setup a personal node and use it.
+
+
+### Going further (optional)
+
+For more information about options to set up the development environment, see [Set up your development environment
+](https://developer.algorand.org/docs/get-started/devenv/).
+This tutorial is meant to be done on TestNet and not on a private network.
+Since it requires the use of an indexer, [sandbox](https://github.com/algorand/sandbox) may not be used.
+
+For more advanced development scenario, we highly recommend setting up sandbox on a private network and installing the Algorand software tools (`goal`, `tealdbg`, ...) by doing the following:
+
+1. [Installing a node](https://developer.algorand.org/docs/run-a-node/setup/install/), 
+2. [Switching to TestNet](https://developer.algorand.org/docs/run-a-node/operations/switch_networks/)
+3. And performing a [fast cathup](https://developer.algorand.org/docs/run-a-node/setup/install/#sync-node-network-using-fast-catchup).
+
+`tealdbg` in particular is very useful to debug smart contracts.
+On Windows, the best solution is to use [Ubuntu 20.04 on WSL 2](https://docs.microsoft.com/en-us/windows/wsl/install).
+
+Other API services exist apart from the PureStake API service: https://developer.algorand.org/ecosystem-projects/?tags=api-services
+Note that the [RandLabs/algoexplorer API service](https://testnet.algoexplorer.io/api-dev/v2) can also be used but it does not provide all the same endpoints. In particular, when using the new RandLabs node, confirming the transaction requires using the indexer rather than the "pending transactions" endpoint as used in the documentation.
 
 ### Step 0.1 - Install Python 3.8 and Pip
 
 *Warning*: Python 2 will not work.
 
-Python 3.8.0 (or later) with Pip must be installed on your computer. You will also need a code editor, such as Visual Studio Code (https://code.visualstudio.com).
+Python 3.8.0 (or later) with Pip must be installed on your computer. 
 
 * On Windows 7/8/10: (warning: Windows XP is not supported)
     1. Download the Python installer on https://www.python.org/downloads/windows/
@@ -78,6 +98,27 @@ Troubleshooting:
 * If you are using Windows and get an error, replace `python3` by `python` everywhere.
 * If you still get an error, check that you added python in the PATH when installing it (see above). If not, uninstall and re-install Python.
 
+### Step 0.3 - Get a PureStake API Key
+
+Visit https://developer.purestake.io/ to sign up for free and get a PureStake API Key to access the PureStake API service.
+
+*Note*: Do not publish anywhere your PureStake API. Anytime you post publicly your code, remove your API key from the code. You may consider using environment variables to store it.
+
+### Step 0.4 - Install an IDE / an Editor
+
+You will also need a code editor, such as [Visual Studio Code](https://code.visualstudio.com) or [PyCharm](https://www.jetbrains.com/pycharm/).
+
+(Optional) If you plan to develop more advanced projects after this homework, we recommend using PyCharm with the [AlgoDEA extension](https://algodea-docs.bloxbean.com/).
+After installing the AlgoDEA extension in PyCharm:
+
+1. Open PyCharm
+2. Create a new Algorand project (instead of "Pure Python" project which is the default)
+3. Set up the node by clicking on the "Algorand Explorer" on the top right and then fill in the information as shown below:
+    ![Screenshot of AlgoDEA PureStake node configuration](img/AlgoDEAPureStakeNodeConfiguration.png)
+4. Click on the button "Fetch Network Info". "Genesis Hash" and "Genesis ID" should be automatically populated
+
+Troubleshooting: If you don't see the "Algorand Explorer" tab, check you created a new Algorand project and not a Pure Python project.
+
 ## Step 1 - Create Two Algorand Accounts and Fund Them
 
 ### Background
@@ -87,7 +128,8 @@ Basic accounts on Algorand are defined by an *address* (or public key) and a *pr
 
 The address is completely public and should be given to anybody who needs to send Algos or other assets/tokens to you for example.
 
-The *private key* is used to authorize transactions from your account by *signing* them. The private key is usually represented by a 25-word mnemonic. It should be kept secret.
+The *private key* is used to authorize transactions from your account by *signing* them. 
+The private key is usually represented by a 25-word mnemonic. It should be kept secret.
 
 ### Step 1.1 - Create Two Algorand Accounts
 
@@ -116,15 +158,19 @@ Private key mnemonic: six citizen candy robot jacket regular install tell end ov
 Account address: ZBXIRU3KVUTZMFC2MNDHFZ5RZMEH6FYGYZ32B6BEJHQNKWTUJUBB72WL4Y
 ```
 
+*Important:* Never use this private key mnemonic to hold real Algos (i.e., on MainNet). Only use it for "fake Algos" on TestNet.
+
 *Note:* Using My Algo Wallet will enable you to do all Steps 1 to 3. But if you want to be able to do the full homework, you will need to know how to use the Python SDK (or another SDK). In that case, we recommend you generate one account with the SDK and one with My Algo Wallet.
 
-*Note:* Even if you created the account using the SDK, you can then import the mnemonic inside My Algo Wallet, so that you can directly use My Algo Wallets to send transactions. After choosing a password, just click on "Add Wallet" and then "Recover Wallet" below "Mnemonic Phrase", and follow the instructions. 
+*Note:* Even if you created the account using the SDK, you can then import the mnemonic inside My Algo Wallet, so that you can directly use My Algo Wallet to send transactions. After choosing a password, just click on "Add Wallet" and then "Import Wallet", and follow the instructions. 
 
-*Note:* [The developer documentation](https://developer.algorand.org/docs/build-apps/hello_world/#generate-a-publicprivate-key-pair) shows many other ways of creating accounts.
+*Note:* You can further import your account in other wallets, such as the wallet in [AlgoDEA](https://algodea-docs.bloxbean.com/account-management) (if you are using AlgoDEA), the [official Algorand Wallet](https://algorandwallet.com/) (after setting it to TestNet) or [AlgoSigner](https://www.purestake.com/technology/algosigner/) (the equivalent of MetaMask for Algorand).
+
+*Note:* [The developer documentation](https://developer.algorand.org/docs/get-details/accounts/create/) shows many other ways of creating accounts.
 
 ### Step 1.1 - Fund the Two Accounts
 
-**Task:** Add 100 Algos to each of the accounts. The Algo is the native cryptocurrency of the Algorand blockchain.
+**Task:** Add 10 Algos to each of the accounts. The Algo is the native cryptocurrency of the Algorand blockchain.
 
 In order to use your accounts, you need to add Algos to them. On MainNet, you would need to buy them for example on an exchange.
 However, on TestNet, you can just use the [dispenser](https://bank.testnet.algorand.network).
@@ -134,11 +180,11 @@ Refresh the page between each account.
 
 ### Step 1.2 - Check the Balance of your Accounts
 
-**Task:** Check that the two accounts now have at least 100 Algos.
+**Task:** Check that the two accounts now have at least 10 Algos.
 
 To check the balance of an account, go to a block explorer (e.g., [AlgoExplorer](https://testnet.algoexplorer.io) or [GoalSeeker](https://goalseeker.purestake.io/algorand/testnet)), search for your address and look at the balance.
 
-Each account should now have 100 Algos.
+Each account should now have 10 Algos.
 If this is not the case, go back to Step 1.1.
 
 Remark that it takes less than 5s for the funding transaction to be committed to the blockchain and the balance to be updated.
@@ -167,13 +213,12 @@ See screenshot below.
 ![Screenshot sending transaction with My Algo Wallet](img/step2MyAlgo.png)
 
 If you are a developer, we recommend you send at least one transaction using the Python SDK by following the [tutorial "Your First Transaction"](https://developer.algorand.org/docs/build-apps/hello_world/#connect-your-client) starting at step "Connect your client". 
-To use the [AlgoExplorer](https://testnet.algoexplorer.io/api-dev/v2) node, define `algod_client` as:
+To use the PureStake API service, define `algod_client` as:
 ```py
 algod_client = algod.AlgodClient(
     algod_token="",
-    algod_address="https://api.testnet.algoexplorer.io",
-    # see https://github.com/algorand/py-algorand-sdk/issues/169
-    headers={"User-Agent": "DoYouLoveMe?"}
+    algod_address="https://testnet-algorand.api.purestake.io/ps2",
+    headers={"X-API-Key": "YOUR PURESTAKE API KEY"}
 )
 ```
 You also need to replace the amount and the note by the correct value.
@@ -198,15 +243,14 @@ Beyond adding a memo to a transaction, notes have many use cases. Here are some 
 #### Algorand Indexer v2 and Searching for Notes
 
 The [Algorand Indexer v2](https://developer.algorand.org/docs/features/indexer) allows to make advanced queries on the blockchain, such as searching for transactions, accounts, assets, ... In particular, it allows to search for all transactions with a note with a certain prefix.
-The developer website contains a [tutorial about it](https://developer.algorand.org/tutorials/v2-read-and-write-transaction-note-field-python).
+The developer website contains a [tutorial about it](https://developer.algorand.org/tutorials/v2-read-and-write-transaction-note-field-python/).
 
-If you do not want to install the indexer, you can use the public AlgoExplorer public indexer:
+If you do not want to install the indexer, you can use the public PureStake API service:
 ```python
 myindexer = indexer.IndexerClient(
     indexer_token="",
-    indexer_address="https://api.testnet.algoexplorer.io/idx2",
-    # see https://github.com/algorand/py-algorand-sdk/issues/169
-    headers={'User-Agent': 'DoYouLoveMe?'}
+    indexer_address="https://testnet-algorand.api.purestake.io/idx2",
+    headers={"X-API-Key": "YOUR PURESTAKE API KEY"}
 )
 ```
 
@@ -224,10 +268,10 @@ ASAs can be used to represent stablecoins, loyalty points, system credits, in-ga
 
 **Task:** Create your own asset on Algorand from account A. The creator account must be account A. The total supply (number of tokens) should be at least 10. Choose your preferred asset name and unit name.
 
-Creating an ASA takes less than 1min and can be done 100% online using [AlgoDesk](https://algodesk.io):
+Creating an ASA takes less than 1min and can be done 100% online using [MyAlgoWallet Asset Manager](https://asset.myalgo.com/) or [AlgoDesk](https://algodesk.io):
 
-1. Go to https://asa.algodesk.io
-2. Replace the default mnemonic by the mnemonic for your account A. (Be careful not to add any extra space or line break at the end.)
+1. Go to https://app.algodesk.io/
+2. Connect to the appropriate wallet on TestNet
 3. Click on "Create Asset"
 4. Choose your preferred asset name, unit name, and total supply (anything above 10 for this homework). See screenshot below.
 ![Screenshot of AlgoDesk](img/step3AlgoDeskAssetCreation.png)
@@ -259,7 +303,7 @@ Now that account B opted in the asset, you can send 1 asset unit from account A 
 
 If you are using My Algo Wallet, just go the account A wallet, click on "All" at the top right, then click on the new asset, and click on "Send" to create a transaction of 1 asset from A to B.
 
-You can also use https://asa.algodesk.io by clicking on the three dots at the top right of the asset box and on "Send Assets". See screenshot below:
+You can also use https://app.algodesk.io by clicking on the three dots at the top right of the asset box and on "Send Assets". See screenshot below:
 ![Screen for sending asset from AlgoDesk](img/step3AlgoDeskAssetSending.png)
 
 If you are a developer however, we recommend that you send the asset transfer transaction using the Python SDK. See the [developer documentation](https://developer.algorand.org/docs/features/asa/#transferring-an-asset) or the tutorial [Working with ASA using Python](https://developer.algorand.org/tutorials/asa-python).
@@ -289,12 +333,12 @@ Atomic transfers allow to group two transactions (transfer of asset from A to B,
 * either both transactions are successful: A gets its Algos and B gets its asset;
 * or both transactions fail: A keeps it asset and B keeps its Algos.
 
-**Task:** Make an atomic transfer where account B sends 12 Algos to account A and account A send 1 asset to account B. Report the transaction ID of the first transaction of the atomic transfer on [form.md](form.md)
+**Task:** Make an atomic transfer where account B sends 1.2 Algos to account A and account A send 1 asset to account B. Report the transaction ID of the first transaction of the atomic transfer on [form.md](form.md)
 
 Follow the [tutorial on the developer documentation](https://developer.algorand.org/docs/features/atomic_transfers).
 Concretely, your Python script needs to:
 
-1. Create a payment transaction of 12 Algos from B to A (like in Step 2). Do not sign it yet.
+1. Create a payment transaction of 1.2 Algos from B to A (like in Step 2). Do not sign it yet.
 2. Create an asset transfer of 1 asset from A to B (like in Step 3.3). Do not sign it yet.
 3. Group the two transactions together. Note that this modifies the transactions to ensure that one cannot be committed without the other. See [the developer documentation](https://developer.algorand.org/docs/features/atomic_transfers/#group-transactions).
 4. Sign the first transaction using the private key of account B (like in Step 2).
@@ -315,12 +359,12 @@ If you do not see the above, it means you sent two independent transactions inst
 
 While atomic transfers are very useful to trade assets, they require each account involved in the trade to sign the transactions.
 In some cases, you may want to allow anybody to trade assets with you without having to sign transactions.
-Layer-1 stateless smart contracts allow to make an account automatically approve transactions that follow some criteria.
+Smart signatures allow to make an account automatically approve transactions that follow some criteria.
 
-To show the power of layer-1 smart contracts, we created an exclusive asset for the class "buildweb3" and provided a layer-1 smart contract that will allow you to receive 1 unit of the asset for just 42 Algos!
-The smart contract approves transactions of 1 unit of the asset if it is in a group of 2 transactions (aka atomic transfer) where:
-1. the first transaction sends 42 Algos to the smart contract (this transaction is signed by your account),
-2. the second transaction sends 1 unit of the asset "buildweb3" from the smart contract (this transaction is approved by the smart contract rather than being signed).
+To show the power of smart signatures, we created an exclusive asset for the class "buildweb3" and provided a smart signature that will allow you to receive 1 unit of the asset for just 4.2 Algos!
+The smart signature approves transactions of 1 unit of the asset if it is in a group of 2 transactions (aka atomic transfer) where:
+1. the first transaction sends 4.2 Algos to the smart signature account (this transaction is signed by your account),
+2. the second transaction sends 1 unit of the asset "buildweb3" from the smart signature account (this transaction is approved by the smart signature rather than being signed).
 
 ### Step 5.1 - Opt-in to the Exclusive Asset "buildweb3"
 
@@ -330,9 +374,9 @@ Remember that opt-in transactions were covered in Step 3.3.
 
 ### Step 5.2 - Receive 1 "buildweb3" Asset
 
-**Task:** Make an atomic transfer of 42 Algos from account A to `4O6BRAPVLX5ID23AZWV33TICD35TI6JWOHXVLPGO4VRJATO6MZZQRKC7RI` and of 1 "buildweb3" asset (ID 14035004) from `4O6BRAPVLX5ID23AZWV33TICD35TI6JWOHXVLPGO4VRJATO6MZZQRKC7RI` to account A, where the second transaction is signed using the [signed smart contract (aka delegated logic sig)](step5.lsig).
+**Task:** Make an atomic transfer of 4.2 Algos from account A to `4O6BRAPVLX5ID23AZWV33TICD35TI6JWOHXVLPGO4VRJATO6MZZQRKC7RI` and of 1 "buildweb3" asset (ID 14035004) from `4O6BRAPVLX5ID23AZWV33TICD35TI6JWOHXVLPGO4VRJATO6MZZQRKC7RI` to account A, where the second transaction is signed using the [signed smart signature (aka delegated logic sig)](step5.lsig).
 
-This task is similar to Step 4, except that the second transaction is signed using a delegated logic sig instead of a normal signature.
+This task is similar to Step 4, except that the second transaction is signed using a delegated logic sig / smart signature instead of a normal signature.
 Concretely, assume `txn2` is the second transaction of your atomic transfer
 Instead of signing it with `stxn2 = txn2.sign(private_key)`, you do the following:
 ```py
@@ -383,23 +427,23 @@ This concludes the homework! :fireworks:
 
 ### Going Further
 
-#### Smart Contract Accounts vs Delegated Logic Sig
+#### Contract Accounts vs Delegated Logic Sig
 
-The stateless smart contract in Step 5 is used as a delegated logic sig: it allows a normal account to delegate some abilities to anyone. 
+The smart signature in Step 5 is used as a delegated logic sig: it allows a normal account to delegate some abilities to anyone. 
 Here the ability is to send 1 unit of asset in an atomic transfer where the first transaction pays 42 Algos.
 Anybody knowing the private key of the underlying account can sign arbitrary transactions without any restriction.
-A delegated logic sig is essentially a compiled smart contract signed by the private key of the underlying account.
+A delegated logic sig is essentially a compiled smart signature signed by the private key of the underlying account.
 
-Algorand also supports more classical smart contract accounts.
-Smart contract accounts are accounts that are only controlled by a smart contract.
-All transactions must be approved by the smart contract and there is no associated private key.
+Algorand also supports more classical smart signature contract accounts.
+Smart signature contract accounts are accounts that are only controlled by a smart signature.
+All transactions must be approved by the smart signature and there is no associated private key.
 
-See [the developer documentation](https://developer.algorand.org/docs/features/asc1/stateless/modes) for details.
+See [the developer documentation](https://developer.algorand.org/docs/get-details/dapps/smart-contracts/smartsigs/modes/) for details.
 
-#### Explanation on How the Smart Contract Works
+#### Explanation on How the Smart Signature Works
 
-The actual smart contract is [step5.teal](step5.teal).
-It was generated using [PyTeal](https://github.com/algorand/pyteal) that simplifies the writing of TEAL scripts, the language of layer-1 smart contracts on Algorand.
+The actual smart signature is [step5.teal](step5.teal).
+It was generated using [PyTeal](https://github.com/algorand/pyteal) that simplifies the writing of TEAL scripts, the language of smart contracts and smart signatures on Algorand.
 In other words, [step5.teal](step5.teal) is the output of [step5.teal.py](step5.teal.py).
 
 Concretely, to generate `step5.lsig`, the secret key of  `4O6BRAPVLX5ID23AZWV33TICD35TI6JWOHXVLPGO4VRJATO6MZZQRKC7RI` was added to `kmd` using `goal account import`, and then the following commands were run:
@@ -409,27 +453,31 @@ goal clerk compile -a 4O6BRAPVLX5ID23AZWV33TICD35TI6JWOHXVLPGO4VRJATO6MZZQRKC7RI
 ```
 This assumes that PyTeal is installed via `python3 -m pip pyteal` and that the [Algorand Command Line Interface Tools](https://developer.algorand.org/docs/build-apps/setup/#command-line-interface-cli-tools) were installed.
 
-#### Stateful Smart Contracts
+#### Smart Contracts
 
-The smart contracts described previously are used to approve or reject transactions.
+The smart signatures described previously are used to approve or reject transactions.
 They cannot store any variables / state on the blockchain.
 
-Algorand also has stateful smart contracts.
-See [the developer documentation](https://developer.algorand.org/docs/features/asc1/stateful/) for details.
+Algorand also has smart contracts.
+See [the developer documentation](https://developer.algorand.org/docs/get-details/dapps/smart-contracts/apps/) for details.
 The developer websites contain several examples of stateful smart contracts on Algorand:
 * [Voting dApp](https://developer.algorand.org/solutions/example-permissioned-voting-stateful-smart-contract-application/).
 * [Crowdfunding smart contract](https://developer.algorand.org/solutions/example-crowdfunding-stateful-smart-contract-application/) and its [associated frontend](https://developer.algorand.org/solutions/creating-crowdfunding-application-algorand-blockchain/).
 
+Most dApps actually now use smart contracts rather than smart signatures.
+Still smart signatures are useful in some specific use cases like the above simple automated trading (a smart contract would have been slightly more complex) and when very complex operations need to be performed (like slow cryptographic operations).
+
 #### Other Tools
 
 Many tools have been developed by the community to facilitate development over Algorand. 
-The developer website contains [a list of them](https://developer.algorand.org/docs/community).
+The developer website contains [a list of them](https://developer.algorand.org/ecosystem-projects/).
 Here we highlight some:
+
+* Automate development of smart contracts and assets:
+https://github.com/scale-it/algorand-builder
 * Block explorer: https://goalseeker.purestake.io, https://algoexplorer.io
 * Create your first token and smart contract without installing anything on your computer:
 https://algodesk.io
-* Interactive online tutorial: https://algorand.rockx.com
-* IDE: VSCode, IntelliJ Idea, Algorand Studio, ...
 * Free API services: https://api.algoexplorer.io,
 https://www.purestake.com/technology/algorand-api (equivalent to Infura for people from
 the Ethereum world)
@@ -437,5 +485,3 @@ the Ethereum world)
 (equivalent of MetaMask for people from the Ethereum world)
 * Write distributed applications in a JavaScript-like language: https://reach.sh (bonus:
 same code works on Ethereum)
-* Automate development of smart contracts and assets:
-https://github.com/scale-it/algorand-builder

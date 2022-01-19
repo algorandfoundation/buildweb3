@@ -14,7 +14,7 @@ gtxn 0 TypeEnum
 int pay
 ==
 gtxn 0 Amount
-int 42000000
+int 4200000
 ==
 &&
 gtxn 0 Receiver
@@ -42,3 +42,4 @@ global ZeroAddress
 ==
 &&
 &&
+return
