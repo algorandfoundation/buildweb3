@@ -31,7 +31,7 @@ Algorand officially supports 4 Software Development Kits (SDK) for developing ap
 
 To access a blockchain, you also need access to an Algorand node and optionally to an Algorand indexer that allows to easily read the blockchain. You can either run those on your computer or use an external API service. See [the developer documentation](https://developer.algorand.org/docs/build-apps/setup/#how-do-i-obtain-an-algod-address-and-token).
 
-### Python SDK and algoexplorer.io
+### Python SDK and PureStake API
 
 This homework will use the Algorand TestNet network.
 TestNet has the same protocol as the main Algorand network MainNet, but uses fake Algos. (The Algo is the native cryptocurrency of the Algorand blockchain.)
@@ -91,7 +91,7 @@ Python 3.8.0 (or later) with Pip must be installed on your computer.
 Open a terminal and run:
 
 ```bash
-python3 -m pip install py-algorand-sdk
+python3 -m pip install py-algorand-sdk --upgrade
 ```
 
 Troubleshooting:
@@ -451,7 +451,7 @@ Concretely, to generate `step5.lsig`, the secret key of  `4O6BRAPVLX5ID23AZWV33T
 python3 step5.teal.py > step5.teal
 goal clerk compile -a 4O6BRAPVLX5ID23AZWV33TICD35TI6JWOHXVLPGO4VRJATO6MZZQRKC7RI -s step5.teal -o step5.lsig
 ```
-This assumes that PyTeal is installed via `python3 -m pip pyteal` and that the [Algorand Command Line Interface Tools](https://developer.algorand.org/docs/build-apps/setup/#command-line-interface-cli-tools) were installed.
+This assumes that PyTeal is installed via `python3 -m pip pyteal --upgrade` and that the [Algorand Command Line Interface Tools](https://developer.algorand.org/docs/build-apps/setup/#command-line-interface-cli-tools) were installed.
 
 #### Smart Contracts
 
