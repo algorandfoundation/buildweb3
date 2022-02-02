@@ -1,9 +1,7 @@
 # Homework - Building with Blockchain for Web 3.0 - Algorand Foundation
 
-This is the homework for the Algorand class of "Building with Blockchain for Web 3.0" (https://buildweb3.org).
-To do the homework, download the file [form.md](form.md) and fill it out.
-Instructions on how to fill it out are provided in the paragraphs **Tasks** below.
-See [form.example.md](form.example.md) for a filled-out form example.
+This repo is based on the homework for the Algorand class of "Building with Blockchain for Web 3.0" (Spring 2021).
+It can be used as an independent tutorial to learn step by step basic features of the Algorand blockchain.
 
 In this homework, you will learn:
 
@@ -18,6 +16,10 @@ If you are interested, just skip Step 0 and do Steps 1, 2, and 3.
 Sections "Background" and "Going Further" are not mandatory to complete the homework but provide information that can be useful to build your project on Algorand.
 
 *Warning*: All the homework is meant to be done on TestNet, where coins (called the Algos) are fake. When switching to MainNet, accounts store real cryptocurrency and proper security of key storage and management needs to be taken into consideration.
+
+*Note*: To actually do the homework (which can be helpful to check you understand everything), download the file [form.md](form.md) and fill it out.
+Instructions on how to fill it out are provided in the paragraphs **Tasks** below.
+See [form.example.md](form.example.md) for a filled-out form example.
 
 *Note*: The answers in [form.example.md](form.example.md) would be valid answers of (a slightly earlier version of) the homework and you can search for the various accounts and transaction IDs on the block explorer of your choice: [AlgoExplorer](https://testnet.algoexplorer.io) or [GoalSeeker](https://goalseeker.purestake.io/algorand/testnet). Note that this homework was recently changed and the answers in [form.example.md](form.example.md) use slightly higher amounts for each transaction.
 
